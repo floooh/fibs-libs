@@ -1,11 +1,11 @@
 import { fibs } from './deps.ts';
 
-export const projectDesc: fibs.ProjectDesc = {
+export const project: fibs.ProjectDesc = {
     imports: {
         cimgui: {
             url: 'https://github.com/cimgui/cimgui',
             ref: '1.89.3',
-            projectDesc: {
+            project: {
                 targets: {
                     cimgui: {
                         type: 'lib',
