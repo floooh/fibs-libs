@@ -20,7 +20,7 @@ export const project: fibs.ProjectDesc = {
     // on Emscripten, use our custom shell.html for all exe targets
     linkOptions: (context) => {
         if (context.config.platform === 'emscripten') {
-            return [ '--shell-file', '@imports/fibs-libs/shell.html' ];
+            return [ '--shell-file', '@imports:fibs-libs/shell.html' ];
         } else {
             return [];
         }
