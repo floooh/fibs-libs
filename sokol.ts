@@ -6,7 +6,15 @@ export const project: fibs.ProjectDesc = {
             url: 'https://github.com/floooh/sokol',
             project: {
                 targets: {
-                    'sokol-interface': {
+                    // only the header search path setup
+                    'sokol-includes': {
+                        type: 'interface',
+                        includeDirectories: {
+                            interface: [ '.', './util' ]
+                        },
+                    },
+                    // fully autoconfigured based on target platform
+                    'sokol-autoconfig': {
                         type: 'interface',
                         includeDirectories: {
                             interface: [ '.', './util' ]
