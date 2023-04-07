@@ -1,0 +1,110 @@
+import { fibs } from './deps.ts';
+
+export const project: fibs.ProjectDesc = {
+    imports: {
+        glfw3: {
+            url: 'https://github.com/glfw/glfw',
+            ref: '3.3.8',
+            project: {
+                targets: {
+                    glfw3: {
+                        type: 'lib',
+                        enabled: (context) => ['macos', 'windows', 'linux'].includes(context.config.platform),
+                        includeDirectories: {
+                            private: [ 'src' ],
+                            public: [ 'include' ],
+                        },
+                        dir: 'src',
+                        sources: (context) => {
+                            let sources = [ 'context.c', 'init.c', 'input.c', 'monitor.c', 'window.c' ];
+                            if (context.config.platform === 'macos') {
+                                sources = [ ...sources,
+                                    'cocoa_init.m',
+                                    'cocoa_joystick.m',
+                                    'cocoa_monitor.m',
+                                    'cocoa_window.m',
+                                    'cocoa_time.c',
+                                    'nsgl_context.m'
+                                ];
+                            } else if (context.config.platform === 'windows') {
+                                sources = [ ...sources,
+                                    'win32_init.c',
+                                    'win32_monitor.c',
+                                    'win32_time.c',
+                                    'win32_thread.c',
+                                    'win32_window.c',
+                                    'win32_joystick.c',
+                                    'wgl_context.c',
+                                ];
+                            } else {
+                                sources = [ ...sources,
+                                    'x11_init.c',
+                                    'x11_monitor.c',
+                                    'x11_window.c',
+                                    'glx_context.c',
+                                    'osmesa_context.c',
+                                    'egl_context.c',
+                                    'posix_time.c',
+                                    'posix_thread.c',
+                                    'xkb_unicode.c',
+                                    'linux_joystick.c',
+                                ];
+                            }
+                            return sources;
+                        },
+                        libs: (context) => {
+                            if (context.config.platform === 'macos') {
+                                return [
+                                    '-framework Cocoa',
+                                    '-framework CoreVideo',
+                                    '-framework OpenGL',
+                                    '-framework Carbon',
+                                    '-framework IOKit'
+                                ];
+                            } else if (context.config.platform === 'windows') {
+                                return [ 'opengl32' ];
+                            } else {
+                                return [ 'X11', 'Xrandr', 'Xi', 'Xinerama', 'Xxf86vm' , 'Xcursor', 'GL', 'm' ];
+                            }
+                        },
+                        compileDefinitions: {
+                            private: (context) => {
+                                switch (context.config.platform) {
+                                    case 'macos':   return [ '_GLFW_COCOA=1', '_GLFW_NSGL=1' ];
+                                    case 'windows': return [ '_GFLW_X11=1', '_GFLW_WGL=1' ];
+                                    default:        return [ '_GLFW_X11=1', '_GLFW_GLX=1' ];
+                                }
+                            }
+                        },
+                        compileOptions: {
+                            public: (context) => {
+                                if (context.config.platform === 'linux') {
+                                    return ['-pthread'];
+                                } else {
+                                    return [];
+                                }
+                            },
+                            private: (context) => {
+                                switch (context.compiler) {
+                                    case 'msvc':
+                                        return [ '/wd4152', '/wd4204', '/wd4242', '/wd4244', '/wd4668', '/wd4996' ];
+                                    default:
+                                        return [ '-Wno-unused-parameter', '-Wno-sign-compare', '-Wno-missing-field-initializers' ];
+                                }
+                            }
+                        },
+                        linkOptions: {
+                            public: (context) => {
+                                if (context.config.platform === 'linux') {
+                                    return [ '-pthread', '-lpthread' ];
+                                } else {
+                                    return [];
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
