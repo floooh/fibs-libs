@@ -10,13 +10,21 @@ export const project: fibs.ProjectDesc = {
                     glfw3: {
                         type: 'lib',
                         enabled: (context) => ['macos', 'windows', 'linux'].includes(context.config.platform),
-                        includeDirectories: {
-                            private: [ 'src' ],
-                            public: [ 'include' ],
-                        },
                         dir: 'src',
+                        includeDirectories: {
+                            public: [ '../include' ],
+                        },
                         sources: (context) => {
-                            let sources = [ 'context.c', 'init.c', 'input.c', 'monitor.c', 'window.c' ];
+                            let sources = [
+                                'context.c',
+                                'init.c',
+                                'input.c',
+                                'monitor.c',
+                                'window.c',
+                                'vulkan.c',
+                                'egl_context.c',
+                                'osmesa_context.c',
+                            ];
                             if (context.config.platform === 'macos') {
                                 sources = [ ...sources,
                                     'cocoa_init.m',
@@ -24,7 +32,8 @@ export const project: fibs.ProjectDesc = {
                                     'cocoa_monitor.m',
                                     'cocoa_window.m',
                                     'cocoa_time.c',
-                                    'nsgl_context.m'
+                                    'nsgl_context.m',
+                                    'posix_thread.c',
                                 ];
                             } else if (context.config.platform === 'windows') {
                                 sources = [ ...sources,
@@ -42,8 +51,6 @@ export const project: fibs.ProjectDesc = {
                                     'x11_monitor.c',
                                     'x11_window.c',
                                     'glx_context.c',
-                                    'osmesa_context.c',
-                                    'egl_context.c',
                                     'posix_time.c',
                                     'posix_thread.c',
                                     'xkb_unicode.c',
