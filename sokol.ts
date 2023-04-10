@@ -10,18 +10,18 @@ export const project: fibs.ProjectDesc = {
                     'sokol-includes': {
                         type: 'interface',
                         includeDirectories: {
-                            interface: [ '.', './util' ]
+                            interface: () => [ '.', './util' ]
                         },
                     },
                     // fully autoconfigured based on target platform
                     'sokol-autoconfig': {
                         type: 'interface',
                         includeDirectories: {
-                            interface: [ '.', './util' ]
+                            interface: () => [ '.', './util' ]
                         },
                         compileDefinitions: {
-                            interface: (context) => {
-                                switch (context.config.platform) {
+                            interface: (ctx) => {
+                                switch (ctx.config.platform) {
                                     case 'windows':
                                         return [ 'SOKOL_D3D11' ];
                                     case 'macos':
@@ -36,8 +36,8 @@ export const project: fibs.ProjectDesc = {
                             }
                         },
                         compileOptions: {
-                            interface: (context) => {
-                                switch (context.config.platform) {
+                            interface: (ctx) => {
+                                switch (ctx.config.platform) {
                                     case 'macos': case 'ios':
                                         return ['--language', 'objective-c'];
                                     case 'linux':
@@ -48,8 +48,8 @@ export const project: fibs.ProjectDesc = {
                             }
                         },
                         linkOptions: {
-                            interface: (context) => {
-                                switch (context.config.platform) {
+                            interface: (ctx) => {
+                                switch (ctx.config.platform) {
                                     case 'emscripten':
                                         return [ '-sUSE_WEBGL2=1', "-sMALLOC='emmalloc'" ];
                                     case 'linux':
@@ -59,8 +59,8 @@ export const project: fibs.ProjectDesc = {
                                 }
                             }
                         },
-                        libs: (context) => {
-                            switch (context.config.platform) {
+                        libs: (ctx) => {
+                            switch (ctx.config.platform) {
                                 case 'macos':
                                     return [
                                         '-framework Foundation',

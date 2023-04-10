@@ -9,7 +9,7 @@ export const project: fibs.ProjectDesc = {
                 targets: {
                     cimgui: {
                         type: 'lib',
-                        sources: [
+                        sources: () => [
                             'cimgui.cpp',
                             'cimgui.h',
                             'imgui/imgui_demo.cpp',
@@ -20,11 +20,11 @@ export const project: fibs.ProjectDesc = {
                             'imgui/imgui.h',
                         ],
                         includeDirectories: {
-                            public: [ '.' ]
+                            public: () => [ '.' ]
                         },
                         compileOptions: {
-                            private: (context) => {
-                                if (context.compiler === 'gcc') {
+                            private: (ctx) => {
+                                if (ctx.compiler === 'gcc') {
                                     return ['-Wno-stringop-overflow'];
                                 } else {
                                     return [];

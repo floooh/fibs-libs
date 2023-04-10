@@ -9,12 +9,12 @@ export const project: fibs.ProjectDesc = {
                 targets: {
                     glfw3: {
                         type: 'lib',
-                        enabled: (context) => ['macos', 'windows', 'linux'].includes(context.config.platform),
+                        enabled: (ctx) => ['macos', 'windows', 'linux'].includes(ctx.config.platform),
                         dir: 'src',
                         includeDirectories: {
-                            public: [ '../include' ],
+                            public: () => [ '../include' ],
                         },
-                        sources: (context) => {
+                        sources: (ctx) => {
                             let sources = [
                                 'context.c',
                                 'init.c',
@@ -25,7 +25,7 @@ export const project: fibs.ProjectDesc = {
                                 'egl_context.c',
                                 'osmesa_context.c',
                             ];
-                            if (context.config.platform === 'macos') {
+                            if (ctx.config.platform === 'macos') {
                                 sources = [ ...sources,
                                     'cocoa_init.m',
                                     'cocoa_joystick.m',
@@ -35,7 +35,7 @@ export const project: fibs.ProjectDesc = {
                                     'nsgl_context.m',
                                     'posix_thread.c',
                                 ];
-                            } else if (context.config.platform === 'windows') {
+                            } else if (ctx.config.platform === 'windows') {
                                 sources = [ ...sources,
                                     'win32_init.c',
                                     'win32_monitor.c',
@@ -59,8 +59,8 @@ export const project: fibs.ProjectDesc = {
                             }
                             return sources;
                         },
-                        libs: (context) => {
-                            if (context.config.platform === 'macos') {
+                        libs: (ctx) => {
+                            if (ctx.config.platform === 'macos') {
                                 return [
                                     '-framework Cocoa',
                                     '-framework CoreVideo',
@@ -68,15 +68,15 @@ export const project: fibs.ProjectDesc = {
                                     '-framework Carbon',
                                     '-framework IOKit'
                                 ];
-                            } else if (context.config.platform === 'windows') {
+                            } else if (ctx.config.platform === 'windows') {
                                 return [ 'opengl32' ];
                             } else {
                                 return [ 'X11', 'Xrandr', 'Xi', 'Xinerama', 'Xxf86vm' , 'Xcursor', 'GL', 'm' ];
                             }
                         },
                         compileDefinitions: {
-                            private: (context) => {
-                                switch (context.config.platform) {
+                            private: (ctx) => {
+                                switch (ctx.config.platform) {
                                     case 'macos':   return [ '_GLFW_COCOA=1', '_GLFW_NSGL=1' ];
                                     case 'windows': return [ '_GFLW_X11=1', '_GFLW_WGL=1' ];
                                     default:        return [ '_GLFW_X11=1', '_GLFW_GLX=1' ];
@@ -84,15 +84,15 @@ export const project: fibs.ProjectDesc = {
                             }
                         },
                         compileOptions: {
-                            public: (context) => {
-                                if (context.config.platform === 'linux') {
+                            public: (ctx) => {
+                                if (ctx.config.platform === 'linux') {
                                     return ['-pthread'];
                                 } else {
                                     return [];
                                 }
                             },
-                            private: (context) => {
-                                switch (context.compiler) {
+                            private: (ctx) => {
+                                switch (ctx.compiler) {
                                     case 'msvc':
                                         return [ '/wd4152', '/wd4204', '/wd4242', '/wd4244', '/wd4668', '/wd4996' ];
                                     default:
@@ -101,8 +101,8 @@ export const project: fibs.ProjectDesc = {
                             }
                         },
                         linkOptions: {
-                            public: (context) => {
-                                if (context.config.platform === 'linux') {
+                            public: (ctx) => {
+                                if (ctx.config.platform === 'linux') {
                                     return [ '-pthread', '-lpthread' ];
                                 } else {
                                     return [];
