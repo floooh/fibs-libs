@@ -78,7 +78,7 @@ export const project: fibs.ProjectDesc = {
                             private: (ctx) => {
                                 switch (ctx.config.platform) {
                                     case 'macos':   return [ '_GLFW_COCOA=1', '_GLFW_NSGL=1' ];
-                                    case 'windows': return [ '_GFLW_X11=1', '_GFLW_WGL=1' ];
+                                    case 'windows': return [ '_GLFW_WIN32=1', '_GFLW_WGL=1' ];
                                     default:        return [ '_GLFW_X11=1', '_GLFW_GLX=1' ];
                                 }
                             }
@@ -94,7 +94,7 @@ export const project: fibs.ProjectDesc = {
                             private: (ctx) => {
                                 switch (ctx.compiler) {
                                     case 'msvc':
-                                        return [ '/wd4152', '/wd4204', '/wd4242', '/wd4244', '/wd4668', '/wd4996' ];
+                                        return [ '/wd4152', '/wd4204', '/wd4242', '/wd4244', '/wd4668', '/wd4996', '/wd4100', '/wd4706' ];
                                     default:
                                         return [ '-Wno-unused-parameter', '-Wno-sign-compare', '-Wno-missing-field-initializers' ];
                                 }
