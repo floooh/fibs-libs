@@ -23,15 +23,15 @@ export const project: fibs.ProjectDesc = {
                             interface: (ctx) => {
                                 switch (ctx.config.platform) {
                                     case 'windows':
-                                        return [ 'SOKOL_D3D11' ];
+                                        return { SOKOL_D3D11: '1' };
                                     case 'macos':
                                     case 'ios':
-                                        return [ 'SOKOL_METAL' ];
+                                        return { SOKOL_METAL: '1' };
                                     case 'emscripten':
                                     case 'android':
-                                        return [ 'SOKOL_GLES3' ];
+                                        return { SOKOL_GLES3: '1' };
                                     default:
-                                        return [ 'SOKOL_GLCORE33' ];
+                                        return { SOKOL_GLCORE33: '1' };
                                 }
                             }
                         },

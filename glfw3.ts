@@ -77,9 +77,9 @@ export const project: fibs.ProjectDesc = {
                         compileDefinitions: {
                             private: (ctx) => {
                                 switch (ctx.config.platform) {
-                                    case 'macos':   return [ '_GLFW_COCOA=1', '_GLFW_NSGL=1' ];
-                                    case 'windows': return [ '_GLFW_WIN32=1', '_GFLW_WGL=1' ];
-                                    default:        return [ '_GLFW_X11=1', '_GLFW_GLX=1' ];
+                                    case 'macos':   return { _GLFW_COCOA: '1', _GLFW_NSGL: '1' };
+                                    case 'windows': return { _GLFW_WIN32: '1', _GFLW_WGL: '1' };
+                                    default:        return { _GLFW_X11: '1', _GLFW_GLX: '1' };
                                 }
                             }
                         },
