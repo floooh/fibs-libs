@@ -8,13 +8,17 @@ const macosFrameworks = [ '-framework Foundation', '-framework Cocoa', '-framewo
 const metalFrameworks = [ '-framework Metal', '-framework MetalKit' ];
 const glFrameworks    = [ '-framework OpenGL' ];
 const linuxLibs       = [ 'X11', 'Xi', 'Xcursor', 'GL', 'm', 'dl', 'asound'] ;
-
-const appleCompileOptions = [ '--language', 'objective-c' ];
+const appleCompileOptions = (ctx: fibs.Context) => {
+    if (ctx.language === 'cxx') {
+        return [ '--language', 'objective-c++' ];
+    } else {
+        return [ '--language', 'objective-c' ];
+    }
+};
 const linuxCompileOptions = [ '-pthread' ];
 
 const emscLinkOptions  = [ '-sUSE_WEBGL2=1', "-sMALLOC='emmalloc'" ];
 const linuxLinkOptions = [ '-pthread', '-lpthread' ];
-
 
 export const project: fibs.ProjectDesc = {
     imports: {
@@ -34,7 +38,12 @@ export const project: fibs.ProjectDesc = {
                         compileOptions: {
                             interface: (ctx) => {
                                 switch (ctx.config.platform) {
-                                    case 'macos': case 'ios': return appleCompileOptions;
+                                    case 'macos': case 'ios':
+                                        if (ctx.language === 'c') {
+                                            return appleCompileOptions(ctx);
+                                        } else if (ctx.language = 'cxx') {
+                                            return [ '--language', 'objective-c++' ];
+                                        }
                                     case 'linux': return linuxCompileOptions;
                                     default: return [];
                                 }
@@ -84,7 +93,7 @@ export const project: fibs.ProjectDesc = {
                         compileOptions: {
                             interface: (ctx) => {
                                 switch (ctx.config.platform) {
-                                    case 'macos': case 'ios': return appleCompileOptions;
+                                    case 'macos': case 'ios': return appleCompileOptions(ctx);
                                     case 'linux': return linuxCompileOptions;
                                     default: return [];
                                 }
