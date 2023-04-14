@@ -1,5 +1,21 @@
 import { fibs } from './deps.ts';
 
+const includeDirectories = {
+    interface: () => [ '.', './util' ]
+};
+
+const macosFrameworks = [ '-framework Foundation', '-framework Cocoa', '-framework QuartzCore', '-framework AudioToolbox' ];
+const metalFrameworks = [ '-framework Metal', '-framework MetalKit' ];
+const glFrameworks    = [ '-framework OpenGL' ];
+const linuxLibs       = [ 'X11', 'Xi', 'Xcursor', 'GL', 'm', 'dl', 'asound'] ;
+
+const appleCompileOptions = [ '--language', 'objective-c' ];
+const linuxCompileOptions = [ '-pthread' ];
+
+const emscLinkOptions  = [ '-sUSE_WEBGL2=1', "-sMALLOC='emmalloc'" ];
+const linuxLinkOptions = [ '-pthread', '-lpthread' ];
+
+
 export const project: fibs.ProjectDesc = {
     imports: {
         sokol: {
@@ -9,71 +25,85 @@ export const project: fibs.ProjectDesc = {
                     // only the header search path setup
                     'sokol-includes': {
                         type: 'interface',
-                        includeDirectories: {
-                            interface: () => [ '.', './util' ]
-                        },
+                        includeDirectories,
                     },
-                    // fully autoconfigured based on target platform
-                    'sokol-autoconfig': {
+                    // configured based on compileDefinitions in build config
+                    'sokol-config': {
                         type: 'interface',
-                        includeDirectories: {
-                            interface: () => [ '.', './util' ]
-                        },
-                        compileDefinitions: {
-                            interface: (ctx) => {
-                                switch (ctx.config.platform) {
-                                    case 'windows':
-                                        return { SOKOL_D3D11: '1' };
-                                    case 'macos':
-                                    case 'ios':
-                                        return { SOKOL_METAL: '1' };
-                                    case 'emscripten':
-                                    case 'android':
-                                        return { SOKOL_GLES3: '1' };
-                                    default:
-                                        return { SOKOL_GLCORE33: '1' };
-                                }
-                            }
-                        },
+                        includeDirectories,
                         compileOptions: {
                             interface: (ctx) => {
                                 switch (ctx.config.platform) {
-                                    case 'macos': case 'ios':
-                                        return ['--language', 'objective-c'];
-                                    case 'linux':
-                                        return ['-pthread'];
-                                    default:
-                                        return [];
+                                    case 'macos': case 'ios': return appleCompileOptions;
+                                    case 'linux': return linuxCompileOptions;
+                                    default: return [];
                                 }
                             }
                         },
                         linkOptions: {
                             interface: (ctx) => {
                                 switch (ctx.config.platform) {
-                                    case 'emscripten':
-                                        return [ '-sUSE_WEBGL2=1', "-sMALLOC='emmalloc'" ];
-                                    case 'linux':
-                                        return [ '-pthread', '-lpthread' ];
-                                    default:
-                                        return [];
+                                    case 'emscripten': return emscLinkOptions;
+                                    case 'linux':      return linuxLinkOptions;
+                                    default:           return [];
                                 }
                             }
                         },
                         libs: (ctx) => {
                             switch (ctx.config.platform) {
                                 case 'macos':
-                                    return [
-                                        '-framework Foundation',
-                                        '-framework Cocoa',
-                                        '-framework QuartzCore',
-                                        '-framework Metal',
-                                        '-framework MetalKit',
-                                        '-framework AudioToolbox',
-                                    ];
+                                    if (ctx.config.compileDefinitions.SOKOL_METAL) {
+                                        return [ ...macosFrameworks, ...metalFrameworks ];
+                                    } else if (ctx.config.compileDefinitions.SOKOL_GLCORE33) {
+                                        return [ ...macosFrameworks, ...glFrameworks ];
+                                    }
+                                    break;
                                 case 'linux':
-                                    return [ 'X11', 'Xi', 'Xcursor', 'GL', 'asound' ];
-                                default:
-                                    return [];
+                                    if (ctx.config.compileDefinitions.SOKOL_GLCORE33) {
+                                        return linuxLibs;
+                                    }
+                                    break;
+                            }
+                            return [];
+                        },
+                    },
+                    // fully autoconfigured based on target platform
+                    'sokol-autoconfig': {
+                        type: 'interface',
+                        includeDirectories,
+                        compileDefinitions: {
+                            interface: (ctx) => {
+                                switch (ctx.config.platform) {
+                                    case 'windows':                     return { SOKOL_D3D11: '1' };
+                                    case 'macos': case 'ios':           return { SOKOL_METAL: '1' };
+                                    case 'emscripten': case 'android':  return { SOKOL_GLES3: '1' };
+                                    default:                            return { SOKOL_GLCORE33: '1' };
+                                }
+                            }
+                        },
+                        compileOptions: {
+                            interface: (ctx) => {
+                                switch (ctx.config.platform) {
+                                    case 'macos': case 'ios': return appleCompileOptions;
+                                    case 'linux': return linuxCompileOptions;
+                                    default: return [];
+                                }
+                            }
+                        },
+                        linkOptions: {
+                            interface: (ctx) => {
+                                switch (ctx.config.platform) {
+                                    case 'emscripten':  return emscLinkOptions;
+                                    case 'linux':       return linuxLinkOptions;
+                                    default:            return [];
+                                }
+                            }
+                        },
+                        libs: (ctx) => {
+                            switch (ctx.config.platform) {
+                                case 'macos': return [ ...macosFrameworks, ...metalFrameworks ];
+                                case 'linux': return linuxLibs;
+                                default:      return [];
                             }
                         }
                     }
