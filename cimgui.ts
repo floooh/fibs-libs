@@ -1,13 +1,15 @@
 import { fibs } from './deps.ts';
 
 export const project: fibs.ProjectDesc = {
-    imports: {
-        cimgui: {
+    imports: [
+        {
+            name: 'cimgui',
             url: 'https://github.com/cimgui/cimgui',
             ref: '1.89.3',
             project: {
-                targets: {
-                    cimgui: {
+                targets: [
+                    {
+                        name: 'cimgui',
                         type: 'lib',
                         sources: () => [
                             'cimgui.cpp',
@@ -32,8 +34,8 @@ export const project: fibs.ProjectDesc = {
                             }
                         }
                     }
-                }
+                ]
             }
         }
-    }
+    ]
 }

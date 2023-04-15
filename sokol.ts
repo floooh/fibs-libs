@@ -21,18 +21,21 @@ const emscLinkOptions  = [ '-sUSE_WEBGL2=1', "-sMALLOC='emmalloc'" ];
 const linuxLinkOptions = [ '-pthread', '-lpthread' ];
 
 export const project: fibs.ProjectDesc = {
-    imports: {
-        sokol: {
+    imports: [
+        {
+            name: 'sokol',
             url: 'https://github.com/floooh/sokol',
             project: {
-                targets: {
+                targets: [
                     // only the header search path setup
-                    'sokol-includes': {
+                    {
+                        name: 'sokol-includes',
                         type: 'interface',
                         includeDirectories,
                     },
                     // configured based on compileDefinitions in build config
-                    'sokol-config': {
+                    {
+                        name: 'sokol-config',
                         type: 'interface',
                         includeDirectories,
                         compileOptions: {
@@ -77,7 +80,8 @@ export const project: fibs.ProjectDesc = {
                         },
                     },
                     // fully autoconfigured based on target platform
-                    'sokol-autoconfig': {
+                    {
+                        name: 'sokol-autoconfig',
                         type: 'interface',
                         includeDirectories,
                         compileDefinitions: {
@@ -116,8 +120,8 @@ export const project: fibs.ProjectDesc = {
                             }
                         }
                     }
-                }
+                ]
             }
         }
-    }
+    ]
 }

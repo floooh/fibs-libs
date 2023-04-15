@@ -1,13 +1,15 @@
 import { fibs } from './deps.ts';
 
 export const project: fibs.ProjectDesc = {
-    imports: {
-        glfw3: {
+    imports: [
+        {
+            name: 'glfw3',
             url: 'https://github.com/glfw/glfw',
             ref: '3.3.8',
             project: {
-                targets: {
-                    glfw3: {
+                targets: [
+                    {
+                        name: 'glfw3',
                         type: 'lib',
                         enabled: (ctx) => ['macos', 'windows', 'linux'].includes(ctx.config.platform),
                         dir: 'src',
@@ -110,8 +112,8 @@ export const project: fibs.ProjectDesc = {
                             }
                         }
                     }
-                }
+                ]
             }
         }
-    }
+    ]
 }

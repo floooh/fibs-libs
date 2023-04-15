@@ -1,13 +1,15 @@
 import { fibs } from './deps.ts';
 
 export const project: fibs.ProjectDesc = {
-    imports: {
-        imgui: {
+    imports: [
+        {
+            name: 'imgui',
             url: 'https://github.com/ocornut/imgui',
             ref: 'v1.89.4',
             project: {
-                targets: {
-                    imgui: {
+                targets: [
+                    {
+                        name: 'imgui',
                         type: 'lib',
                         sources: () => [
                             'imgui_demo.cpp',
@@ -30,8 +32,8 @@ export const project: fibs.ProjectDesc = {
                             }
                         }
                     }
-                }
+                ]
             }
         }
-    }
+    ]
 }
