@@ -14,7 +14,7 @@ export const project: fibs.ProjectDesc = {
                         includeDirectories: {
                             public: () => [ '.' ]
                         },
-                        sources: (ctx) => [ 'microui.c', 'microui.h' ],
+                        sources: () => [ 'microui.c', 'microui.h' ],
                         compileOptions: {
                             private: (ctx) => {
                                 if (ctx.compiler === 'msvc') {

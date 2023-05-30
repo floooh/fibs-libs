@@ -44,8 +44,10 @@ export const project: fibs.ProjectDesc = {
                                     case 'macos': case 'ios':
                                         if (ctx.language === 'c') {
                                             return appleCompileOptions(ctx);
-                                        } else if (ctx.language = 'cxx') {
+                                        } else if (ctx.language === 'cxx') {
                                             return [ '--language', 'objective-c++' ];
+                                        } else {
+                                            return [];
                                         }
                                     case 'linux': return linuxCompileOptions;
                                     default: return [];
