@@ -5,7 +5,7 @@ export const project: fibs.ProjectDesc = {
         {
             name: 'imgui',
             url: 'https://github.com/ocornut/imgui',
-            ref: 'v1.89.4',
+            ref: 'v1.89.5',
             project: {
                 targets: [
                     {
