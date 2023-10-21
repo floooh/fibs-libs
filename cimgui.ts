@@ -5,7 +5,7 @@ export const project: fibs.ProjectDesc = {
         {
             name: 'cimgui',
             url: 'https://github.com/cimgui/cimgui',
-            ref: '1.89.5',
+            ref: '1.89.9',
             project: {
                 targets: [
                     {
