@@ -1,1 +1,1 @@
-export * as fibs from 'https://deno.land/x/fibs@v1.2.0/mod.ts';
+export * as fibs from 'https://deno.land/x/fibs@v1.3.0/mod.ts';
