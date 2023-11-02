@@ -15,13 +15,15 @@ export const project: fibs.ProjectDesc = {
             },
             compileOptions: {
               interface: (ctx) => {
-                if (ctx.compiler !== 'msvc') {
+                if (ctx.compiler === 'msvc') {
+                  return [
+                    '/wd4244' // conversion from 'x' to 'y'
+                  ];
+                } else {
                   return [
                     '-Wno-sign-conversion',
                     '-Wno-unused-function',
-                  ]
-                } else {
-                  return [];
+                  ];
                 }
               }
             }
