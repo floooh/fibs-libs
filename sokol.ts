@@ -20,7 +20,7 @@ export function configure(c: fibs.Configurer) {
 export function build(b: fibs.Builder) {
     const backend = selectBackend(b);
     b.addTarget('sokol', 'interface', (t: fibs.TargetBuilder) => {
-        t.setSourcesDir(`${b.importsDir()}/sokol`);
+        t.setDir(`${b.importsDir()}/sokol`);
         t.addIncludeDirectories({ dirs: ['.', './util'], scope: 'interface' });
         t.addCompileDefinitions({ defs: { [`SOKOL_${backend.toUpperCase()}`]: '1' }, scope: 'interface' });
         if (b.isMacOS() || b.isIOS()) {
