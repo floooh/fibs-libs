@@ -24,8 +24,8 @@ export function build(b: fibs.Builder) {
         t.addIncludeDirectories({ dirs: ['.', './util'], scope: 'interface' });
         t.addCompileDefinitions({ defs: { [`SOKOL_${backend.toUpperCase()}`]: '1' }, scope: 'interface' });
         if (b.isMacOS() || b.isIOS()) {
-            t.addCompileOptions({ opts: ['--language objective-c++'], language: 'cxx' });
-            t.addCompileOptions({ opts: ['--language objective-c'], language: 'c' });
+            t.addCompileOptions({ opts: ['--language objective-c++'], language: 'cxx', scope: 'interface' });
+            t.addCompileOptions({ opts: ['--language objective-c'], language: 'c', scope: 'interface' });
             t.addLibraries(['-framework Foundation', '-framework AudioToolbox']);
             if (b.isMacOS()) {
                 t.addLibraries(['-framework Cocoa', '-framework Quartzcore']);
@@ -39,7 +39,7 @@ export function build(b: fibs.Builder) {
                 default: break;
             }
         } else if (b.isLinux()) {
-            t.addLinkOptions(['-pthread']);
+            t.addLinkOptions({ opts: ['-pthread'], scope: 'interface' });
             t.addLibraries(['X11', 'Xi', 'Xcursor', 'm', 'dl', 'asound', 'pthread']);
             if (b.importOption('useEGL')) {
                 t.addCompileDefinitions({ defs: { 'SOKOL_FORCE_EGL': '1' }, scope: 'interface' });
@@ -55,12 +55,12 @@ export function build(b: fibs.Builder) {
             t.addLibraries(['GLESv3', 'EGL', 'log', 'android', 'aaudio']);
         } else if (b.isEmscripten()) {
             // FIXME: make configurable
-            t.addLinkOptions(['-sNO_FILESYSTEM=1', `-sMALLOC='emmalloc'`]);
+            t.addLinkOptions({ opts: ['-sNO_FILESYSTEM=1', `-sMALLOC='emmalloc'`], scope: 'interface' });
             if (backend === 'gles3') {
-                t.addLinkOptions(['-sUSE_WEBGL2=1']);
+                t.addLinkOptions({ opts: ['-sUSE_WEBGL2=1'], scope: 'interface' });
             } else if (backend === 'wgpu') {
-                t.addCompileOptions(['--use-port=emdawnwebgpu']);
-                t.addLinkOptions(['--use-port=emdawnwebgpu']);
+                t.addCompileOptions({ opts: ['--use-port=emdawnwebgpu'], scope: 'interface'});
+                t.addLinkOptions({ opts: ['--use-port=emdawnwebgpu'], scope: 'interface'});
             }
         }
     });
