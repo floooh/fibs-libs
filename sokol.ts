@@ -1,151 +1,90 @@
+//------------------------------------------------------------------------------
+// Import options:
+//
+// 'sokolBackend' = 'glcore' | 'gles3' | 'd3d11' | 'metal' | 'wgpu' | 'vulkan'
+// 'useEGL': boolean
+//
+//  If not set, backend is selected automatically by target platform
+//
 import { fibs } from './deps.ts';
 
-const includeDirectories = {
-  interface: () => ['.', './util'],
-};
+type SokolBackend = 'glcore' | 'gles3' | 'd3d11' | 'metal' | 'wgpu' | 'vulkan' | 'dummy_backend';
 
-const macosFrameworks = ['-framework Foundation', '-framework Cocoa', '-framework QuartzCore', '-framework AudioToolbox'];
-const metalFrameworks = ['-framework Metal', '-framework MetalKit'];
-const glFrameworks = ['-framework OpenGL'];
-const linuxLibs = ['X11', 'Xi', 'Xcursor', 'GL', 'm', 'dl', 'asound'];
-const appleCompileOptions = (ctx: fibs.Context) => {
-  if (ctx.language === 'cxx') {
-    return ['--language', 'objective-c++'];
-  } else {
-    return ['--language', 'objective-c'];
-  }
-};
-const linuxCompileOptions = ['-pthread'];
+export function configure(c: fibs.Configurer) {
+    c.addImport({
+        name: 'sokol',
+        url: 'https://github.com/floooh/sokol',
+    });
+}
 
-const emscLinkOptions = ['-sUSE_WEBGL2=1', '-sMALLOC=\'emmalloc\''];
-const linuxLinkOptions = ['-pthread', '-lpthread'];
+export function build(b: fibs.Builder) {
+    const backend = selectBackend(b);
+    b.addTarget('sokol', 'interface', (t: fibs.TargetBuilder) => {
+        t.setSourcesDir(`${b.importsDir()}/sokol`);
+        t.addIncludeDirectories({ dirs: ['.', './util'], scope: 'interface' });
+        t.addCompileDefinitions({ defs: { [`SOKOL_${backend.toUpperCase()}`]: '1' }, scope: 'interface' });
+        if (b.isMacOS() || b.isIOS()) {
+            t.addCompileOptions({ opts: ['--language', 'objective-c++'], language: 'cxx' });
+            t.addCompileOptions({ opts: ['--language', 'objecttive-c'], language: 'c' });
+            t.addLibraries(['-framework Foundation', '-framework AudioToolbox']);
+            if (b.isMacOS()) {
+                t.addLibraries(['-framework Cocoa', '-framework Quartzcore']);
+            } else if (b.isIOS()) {
+                t.addLibraries(['-framwork UIKit', '-framework AVFoundation']);
+            }
+            switch (backend) {
+                case 'metal': t.addLibraries(['-framework MetalKit', '-framework Metal']); break;
+                case 'glcore': t.addLibraries(['-framework OpenGL']); break;
+                case 'gles3': t.addLibraries(['-framework OpenGLES']); break;
+                default: break;
+            }
+        } else if (b.isLinux()) {
+            t.addLinkOptions(['-pthread']);
+            t.addLibraries(['X11', 'Xi', 'Xcursor', 'm', 'dl', 'asound', 'pthread']);
+            if (b.importOption('useEGL')) {
+                t.addCompileDefinitions({ defs: { 'SOKOL_FORCE_EGL': '1' }, scope: 'interface' });
+                t.addLibraries(['EGL']);
+            }
+            switch (backend) {
+                case 'glcore': t.addLibraries(['GL']); break;
+                case 'gles3': t.addLibraries(['GLESv2']); break; // not a typo
+                case 'vulkan': t.addLibraries(['vulkan']); break;
+                default: break;
+            }
+        } else if (b.isAndroid()) {
+            t.addLibraries(['GLESv3', 'EGL', 'log', 'android', 'aaudio']);
+        } else if (b.isEmscripten()) {
+            // FIXME: make configurable
+            t.addLinkOptions(['-sNO_FILESYSTEM=1', `-sMALLOC='emmalloc'`]);
+            if (backend === 'gles3') {
+                t.addLinkOptions(['-sUSE_WEBGL2=1']);
+            } else if (backend === 'wgpu') {
+                t.addCompileOptions(['--use-port=emdawnwebgpu']);
+                t.addLinkOptions(['--use-port=emdawnwebgpu']);
+            }
+        }
+    });
+}
 
-export const project: fibs.ProjectDesc = {
-  imports: [
-    {
-      name: 'sokol',
-      url: 'https://github.com/floooh/sokol',
-      project: {
-        targets: [
-          // only the header search path setup
-          {
-            name: 'sokol-includes',
-            type: 'interface',
-            includeDirectories,
-          },
-          // configured based on compileDefinitions in build config
-          {
-            name: 'sokol-config',
-            type: 'interface',
-            includeDirectories,
-            compileOptions: {
-              interface: (ctx) => {
-                switch (ctx.config.platform) {
-                  case 'macos':
-                  case 'ios':
-                    if (ctx.language === 'c') {
-                      return appleCompileOptions(ctx);
-                    } else if (ctx.language === 'cxx') {
-                      return ['--language', 'objective-c++'];
-                    } else {
-                      return [];
-                    }
-                  case 'linux':
-                    return linuxCompileOptions;
-                  default:
-                    return [];
-                }
-              },
-            },
-            linkOptions: {
-              interface: (ctx) => {
-                switch (ctx.config.platform) {
-                  case 'emscripten':
-                    return emscLinkOptions;
-                  case 'linux':
-                    return linuxLinkOptions;
-                  default:
-                    return [];
-                }
-              },
-            },
-            libs: (ctx) => {
-              switch (ctx.config.platform) {
-                case 'macos':
-                  if (ctx.config.compileDefinitions.SOKOL_METAL) {
-                    return [...macosFrameworks, ...metalFrameworks];
-                  } else if (ctx.config.compileDefinitions.SOKOL_GLCORE33) {
-                    return [...macosFrameworks, ...glFrameworks];
-                  }
-                  break;
-                case 'linux':
-                  if (ctx.config.compileDefinitions.SOKOL_GLCORE33) {
-                    return linuxLibs;
-                  }
-                  break;
-              }
-              return [];
-            },
-          },
-          // fully autoconfigured based on target platform
-          {
-            name: 'sokol-autoconfig',
-            type: 'interface',
-            includeDirectories,
-            compileDefinitions: {
-              interface: (ctx) => {
-                switch (ctx.config.platform) {
-                  case 'windows':
-                    return { SOKOL_D3D11: '1' };
-                  case 'macos':
-                  case 'ios':
-                    return { SOKOL_METAL: '1' };
-                  case 'emscripten':
-                  case 'android':
-                    return { SOKOL_GLES3: '1' };
-                  default:
-                    return { SOKOL_GLCORE33: '1' };
-                }
-              },
-            },
-            compileOptions: {
-              interface: (ctx) => {
-                switch (ctx.config.platform) {
-                  case 'macos':
-                  case 'ios':
-                    return appleCompileOptions(ctx);
-                  case 'linux':
-                    return linuxCompileOptions;
-                  default:
-                    return [];
-                }
-              },
-            },
-            linkOptions: {
-              interface: (ctx) => {
-                switch (ctx.config.platform) {
-                  case 'emscripten':
-                    return emscLinkOptions;
-                  case 'linux':
-                    return linuxLinkOptions;
-                  default:
-                    return [];
-                }
-              },
-            },
-            libs: (ctx) => {
-              switch (ctx.config.platform) {
-                case 'macos':
-                  return [...macosFrameworks, ...metalFrameworks];
-                case 'linux':
-                  return linuxLibs;
-                default:
-                  return [];
-              }
-            },
-          },
-        ],
-      },
-    },
-  ],
-};
+function assertSokolBackend(val: unknown): asserts val is SokolBackend {
+    const validBackends = ['glcore', 'gles3', 'd3d11', 'metal', 'wgpu', 'vulkan'];
+    if (!(typeof val === 'string' && validBackends.includes(val))) {
+        fibs.log.panic(`import option sokolBackend must be one of: ${validBackends.join(' ')}`);
+    }
+}
+
+function selectBackend(b: fibs.Builder): SokolBackend {
+    if (b.importOption('sokolBackend') !== undefined) {
+        const backend = b.importOption('sokolBackend');
+        assertSokolBackend(backend);
+        return backend;
+    } else {
+        switch (b.hostPlatform()) {
+            case 'windows': return 'd3d11';
+            case 'linux': return 'glcore';
+            case 'macos': case 'ios': return 'metal';
+            case 'emscripten': case 'android': return 'gles3';
+            default: return 'glcore';
+        }
+    }
+}
