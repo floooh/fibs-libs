@@ -26,16 +26,16 @@ export function build(b: fibs.Builder) {
         if (b.isMacOS() || b.isIOS()) {
             t.addCompileOptions({ opts: ['--language objective-c++'], language: 'cxx', scope: 'interface' });
             t.addCompileOptions({ opts: ['--language objective-c'], language: 'c', scope: 'interface' });
-            t.addLibraries(['-framework Foundation', '-framework AudioToolbox']);
+            t.addLibraries(['"-framework Foundation"', '"-framework AudioToolbox"']);
             if (b.isMacOS()) {
-                t.addLibraries(['-framework Cocoa', '-framework Quartzcore']);
+                t.addLibraries(['"-framework Cocoa"', '"-framework Quartzcore"']);
             } else if (b.isIOS()) {
-                t.addLibraries(['-framwork UIKit', '-framework AVFoundation']);
+                t.addLibraries(['"-framwork UIKit"', '"-framework AVFoundation"']);
             }
             switch (backend) {
-                case 'metal': t.addLibraries(['-framework MetalKit', '-framework Metal']); break;
-                case 'glcore': t.addLibraries(['-framework OpenGL']); break;
-                case 'gles3': t.addLibraries(['-framework OpenGLES']); break;
+                case 'metal': t.addLibraries(['"-framework MetalKit"', '"-framework Metal"']); break;
+                case 'glcore': t.addLibraries(['"-framework OpenGL"']); break;
+                case 'gles3': t.addLibraries(['"-framework OpenGLES"']); break;
                 default: break;
             }
         } else if (b.isLinux()) {
