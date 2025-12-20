@@ -24,8 +24,8 @@ export function build(b: fibs.Builder) {
         t.addIncludeDirectories({ dirs: ['.', './util'], scope: 'interface' });
         t.addCompileDefinitions({ defs: { [`SOKOL_${backend.toUpperCase()}`]: '1' }, scope: 'interface' });
         if (b.isMacOS() || b.isIOS()) {
-            t.addCompileOptions({ opts: ['--language', 'objective-c++'], language: 'cxx' });
-            t.addCompileOptions({ opts: ['--language', 'objecttive-c'], language: 'c' });
+            t.addCompileOptions({ opts: ['--language objective-c++'], language: 'cxx' });
+            t.addCompileOptions({ opts: ['--language objecttive-c'], language: 'c' });
             t.addLibraries(['-framework Foundation', '-framework AudioToolbox']);
             if (b.isMacOS()) {
                 t.addLibraries(['-framework Cocoa', '-framework Quartzcore']);
