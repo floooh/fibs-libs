@@ -66,25 +66,28 @@ export function build(b: fibs.Builder) {
     });
 }
 
-function assertSokolBackend(val: unknown): asserts val is SokolBackend {
+function isValidSokolBackend(val: unknown): val is SokolBackend {
     const validBackends = ['glcore', 'gles3', 'd3d11', 'metal', 'webgpu', 'vulkan'];
     if (!(typeof val === 'string' && validBackends.includes(val))) {
-        fibs.log.panic(`import option sokolBackend must be one of: ${validBackends.join(' ')}`);
+        fibs.log.warn(`import option sokolBackend must be one of: ${validBackends.join(' ')}`);
+        return false;
     }
+    return true;
 }
 
 function selectBackend(b: fibs.Builder): SokolBackend {
     if (b.importOption('sokolBackend') !== undefined) {
         const backend = b.importOption('sokolBackend');
-        assertSokolBackend(backend);
-        return backend;
-    } else {
-        switch (b.platform()) {
-            case 'windows': return 'd3d11';
-            case 'linux': return 'glcore';
-            case 'macos': case 'ios': return 'metal';
-            case 'emscripten': case 'android': return 'gles3';
-            default: return 'glcore';
+        if (isValidSokolBackend(backend)) {
+            return backend;
         }
+    }
+    // fallthrough: auto-select
+    switch (b.platform()) {
+        case 'windows': return 'd3d11';
+        case 'linux': return 'glcore';
+        case 'macos': case 'ios': return 'metal';
+        case 'emscripten': case 'android': return 'gles3';
+        default: return 'glcore';
     }
 }
