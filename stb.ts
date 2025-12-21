@@ -3,7 +3,7 @@ import { fibs } from './deps.ts';
 export function configure(c: fibs.Configurer) {
   c.addImport({
     name: 'stb',
-    url: 'https://github.com/nothing/stb',
+    url: 'https://github.com/nothings/stb',
   });
 }
 
