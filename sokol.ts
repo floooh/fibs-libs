@@ -1,14 +1,14 @@
 //------------------------------------------------------------------------------
 // Import options:
 //
-// 'sokolBackend': 'glcore' | 'gles3' | 'd3d11' | 'metal' | 'wgpu' | 'vulkan'
+// 'sokolBackend': 'glcore' | 'gles3' | 'd3d11' | 'metal' | 'webgpu' | 'vulkan'
 // 'useEGL': boolean
 //
 //  If not set, backend is selected automatically by target platform
 //
 import { fibs } from './deps.ts';
 
-type SokolBackend = 'glcore' | 'gles3' | 'd3d11' | 'metal' | 'wgpu' | 'vulkan' | 'dummy_backend';
+type SokolBackend = 'glcore' | 'gles3' | 'd3d11' | 'metal' | 'webgpu' | 'vulkan' | 'dummy_backend';
 
 export function configure(c: fibs.Configurer) {
     c.addImport({
@@ -58,7 +58,7 @@ export function build(b: fibs.Builder) {
             t.addLinkOptions({ opts: ['-sNO_FILESYSTEM=1', `-sMALLOC='emmalloc'`], scope: 'interface' });
             if (backend === 'gles3') {
                 t.addLinkOptions({ opts: ['-sUSE_WEBGL2=1'], scope: 'interface' });
-            } else if (backend === 'wgpu') {
+            } else if (backend === 'webgpu') {
                 t.addCompileOptions({ opts: ['--use-port=emdawnwebgpu'], scope: 'interface'});
                 t.addLinkOptions({ opts: ['--use-port=emdawnwebgpu'], scope: 'interface'});
             }
@@ -67,7 +67,7 @@ export function build(b: fibs.Builder) {
 }
 
 function assertSokolBackend(val: unknown): asserts val is SokolBackend {
-    const validBackends = ['glcore', 'gles3', 'd3d11', 'metal', 'wgpu', 'vulkan'];
+    const validBackends = ['glcore', 'gles3', 'd3d11', 'metal', 'webgpu', 'vulkan'];
     if (!(typeof val === 'string' && validBackends.includes(val))) {
         fibs.log.panic(`import option sokolBackend must be one of: ${validBackends.join(' ')}`);
     }
