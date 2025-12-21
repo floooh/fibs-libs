@@ -1,35 +1,21 @@
 import { fibs } from './deps.ts';
 
-export const project: fibs.ProjectDesc = {
-  imports: [
-    {
-      name: 'stb',
-      url: 'https://github.com/nothings/stb/',
-      project: {
-        targets: [
-          {
-            name: 'stb',
-            type: 'interface',
-            includeDirectories: {
-              interface: () => ['.'],
-            },
-            compileOptions: {
-              interface: (ctx) => {
-                if (ctx.compiler === 'msvc') {
-                  return [
-                    '/wd4244' // conversion from 'x' to 'y'
-                  ];
-                } else {
-                  return [
-                    '-Wno-sign-conversion',
-                    '-Wno-unused-function',
-                  ];
-                }
-              }
-            }
-          }
-        ]
-      }
-    },
-  ],
-};
+export function configure(c: fibs.Configurer) {
+  c.addImport({
+    name: 'stb',
+    url: 'https://github.com/nothing/stb',
+  });
+}
+
+export function build(b: fibs.Builder) {
+  b.addTarget('stb', 'interface', (t) => {
+    t.setDir(`${b.importsDir()}/stb`);
+    t.addIncludeDirectories({ dirs: ['.'], scope: 'interface' });
+    if (b.compiler() === 'msvc') {
+      // conversion from 'x' to 'y'
+      t.addCompileOptions({opts: [ '/wd4244' ], scope: 'interface' });
+    } else {
+      t.addCompileOptions({ opts: ['-Wno-sign-conversion', '-Wno-unused-function'], scope: 'interface' });
+    }
+  });
+}
