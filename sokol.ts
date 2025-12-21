@@ -34,8 +34,8 @@ export function build(b: fibs.Builder) {
             }
             switch (backend) {
                 case 'metal': t.addFrameworks(['MetalKit', 'Metal']); break;
-                case 'glcore': t.addLibraries(['OpenGL']); break;
-                case 'gles3': t.addLibraries(['OpenGLES']); break;
+                case 'glcore': t.addFrameworks(['OpenGL']); break;
+                case 'gles3': t.addFrameworks(['OpenGLES']); break;
                 default: break;
             }
         } else if (b.isLinux()) {
