@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 // Import options:
 //
-// 'sokolBackend' = 'glcore' | 'gles3' | 'd3d11' | 'metal' | 'wgpu' | 'vulkan'
+// 'sokolBackend': 'glcore' | 'gles3' | 'd3d11' | 'metal' | 'wgpu' | 'vulkan'
 // 'useEGL': boolean
 //
 //  If not set, backend is selected automatically by target platform
@@ -26,16 +26,16 @@ export function build(b: fibs.Builder) {
         if (b.isMacOS() || b.isIOS()) {
             t.addCompileOptions({ opts: ['--language objective-c++'], language: 'cxx', scope: 'interface' });
             t.addCompileOptions({ opts: ['--language objective-c'], language: 'c', scope: 'interface' });
-            t.addLibraries(['"-framework Foundation"', '"-framework AudioToolbox"']);
+            t.addFrameworks(['Foundation', 'AudioToolbox']);
             if (b.isMacOS()) {
-                t.addLibraries(['"-framework Cocoa"', '"-framework Quartzcore"']);
+                t.addFrameworks(['Cocoa', 'Quartzcore']);
             } else if (b.isIOS()) {
-                t.addLibraries(['"-framwork UIKit"', '"-framework AVFoundation"']);
+                t.addFrameworks(['UIKit', 'AVFoundation']);
             }
             switch (backend) {
-                case 'metal': t.addLibraries(['"-framework MetalKit"', '"-framework Metal"']); break;
-                case 'glcore': t.addLibraries(['"-framework OpenGL"']); break;
-                case 'gles3': t.addLibraries(['"-framework OpenGLES"']); break;
+                case 'metal': t.addFrameworks(['MetalKit', 'Metal']); break;
+                case 'glcore': t.addLibraries(['OpenGL']); break;
+                case 'gles3': t.addLibraries(['OpenGLES']); break;
                 default: break;
             }
         } else if (b.isLinux()) {
