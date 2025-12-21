@@ -79,7 +79,7 @@ function selectBackend(b: fibs.Builder): SokolBackend {
         assertSokolBackend(backend);
         return backend;
     } else {
-        switch (b.hostPlatform()) {
+        switch (b.platform()) {
             case 'windows': return 'd3d11';
             case 'linux': return 'glcore';
             case 'macos': case 'ios': return 'metal';
