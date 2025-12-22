@@ -9,7 +9,7 @@ export function configure(c: fibs.Configurer) {
 
 export function build(b: fibs.Builder) {
   b.addTarget('stb', 'interface', (t) => {
-    t.setDir(`${b.importsDir()}/stb`);
+    t.setDir(`${b.importDir('stb')}`);
     t.addIncludeDirectories({ dirs: ['.'], scope: 'interface' });
     if (b.compiler() === 'msvc') {
       // conversion from 'x' to 'y'
