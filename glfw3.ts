@@ -94,6 +94,7 @@ export const project: fibs.ProjectDesc = {
             compileOptions: {
               public: (ctx) => {
                 if (ctx.config.platform === 'linux') {
+                  // obsolete
                   return ['-pthread'];
                 } else {
                   return [];
@@ -111,6 +112,7 @@ export const project: fibs.ProjectDesc = {
             linkOptions: {
               public: (ctx) => {
                 if (ctx.config.platform === 'linux') {
+                  // obsolete
                   return ['-pthread', '-lpthread'];
                 } else {
                   return [];

@@ -39,8 +39,7 @@ export function build(b: fibs.Builder) {
                 default: break;
             }
         } else if (b.isLinux()) {
-            t.addLinkOptions({ opts: ['-pthread'], scope: 'interface' });
-            t.addLibraries(['X11', 'Xi', 'Xcursor', 'm', 'dl', 'asound', 'pthread']);
+            t.addLibraries(['X11', 'Xi', 'Xcursor', 'm', 'dl', 'asound']);
             if (b.importOption('useEGL')) {
                 t.addCompileDefinitions({ defs: { 'SOKOL_FORCE_EGL': '1' }, scope: 'interface' });
                 t.addLibraries(['EGL']);
