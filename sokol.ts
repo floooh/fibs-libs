@@ -6,6 +6,7 @@
 //
 //  If not set, backend is selected automatically by target platform
 //
+// deno-lint-ignore no-unversioned-import
 import * as fibs from 'jsr:@floooh/fibs';
 
 type SokolBackend = 'glcore' | 'gles3' | 'd3d11' | 'metal' | 'wgpu' | 'vulkan' | 'dummy_backend';
