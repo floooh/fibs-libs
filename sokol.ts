@@ -56,6 +56,7 @@ export function build(b: fibs.Builder) {
         } else if (b.isEmscripten()) {
             // FIXME: make configurable
             t.addLinkOptions({ opts: ['-sNO_FILESYSTEM=1', `-sMALLOC='emmalloc'`], scope: 'interface' });
+            t.addLinkOptions({ opts: ['--closure 1'], scope: 'interface', buildMode: 'release'});
             if (backend === 'gles3') {
                 t.addLinkOptions({ opts: ['-sUSE_WEBGL2=1'], scope: 'interface' });
             } else if (backend === 'wgpu') {
