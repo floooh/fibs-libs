@@ -16,5 +16,8 @@
     "rules": {
       "exclude": ["require-await"]
     }
+  },
+  "imports": {
+    "@floooh/fibs": "jsr:@floooh/fibs@^0.1.4"
   }
 }

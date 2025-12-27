@@ -1,4 +1,4 @@
-import { fibs } from './deps.ts';
+import * as fibs from '@floooh/fibs';
 
 export function configure(c: fibs.Configurer) {
   c.addImport({
