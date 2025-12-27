@@ -1,4 +1,4 @@
-import * as fibs from '@floooh/fibs';
+import * as fibs from 'jsr:@floooh/fibs';
 
 export function configure(c: fibs.Configurer) {
   c.addImport({

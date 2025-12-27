@@ -4,7 +4,8 @@
     "noImplicitAny": true,
     "noImplicitReturns": true,
     "noUnusedLocals": true,
-    "strictNullChecks": true
+    "strictNullChecks": true,
+    "checkJs": true
   },
   "fmt": {
     "useTabs": false,
@@ -16,8 +17,5 @@
     "rules": {
       "exclude": ["require-await"]
     }
-  },
-  "imports": {
-    "@floooh/fibs": "jsr:@floooh/fibs@^0.1.4"
   }
 }
