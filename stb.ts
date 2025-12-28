@@ -11,12 +11,12 @@ export function configure(c: fibs.Configurer) {
 export function build(b: fibs.Builder) {
   b.addTarget('stb', 'interface', (t) => {
     t.setDir(`${b.importDir('stb')}`);
-    t.addIncludeDirectories({ dirs: ['.'], scope: 'interface' });
+    t.addIncludeDirectories(['.']);
     if (b.compiler() === 'msvc') {
       // conversion from 'x' to 'y'
-      t.addCompileOptions({opts: [ '/wd4244' ], scope: 'interface' });
+      t.addCompileOptions([ '/wd4244' ]);
     } else {
-      t.addCompileOptions({ opts: ['-Wno-sign-conversion', '-Wno-unused-function'], scope: 'interface' });
+      t.addCompileOptions(['-Wno-sign-conversion', '-Wno-unused-function']);
     }
   });
 }

@@ -22,11 +22,11 @@ export function build(b: fibs.Builder) {
     const backend = selectBackend(b);
     b.addTarget('sokol', 'interface', (t: fibs.TargetBuilder) => {
         t.setDir(`${b.importDir('sokol')}`);
-        t.addIncludeDirectories({ dirs: ['.', './util'], scope: 'interface' });
-        t.addCompileDefinitions({ defs: { [`SOKOL_${backend.toUpperCase()}`]: '1' }, scope: 'interface' });
+        t.addIncludeDirectories(['.', './util']);
+        t.addCompileDefinitions({[`SOKOL_${backend.toUpperCase()}`]: '1' });
         if (b.isMacOS() || b.isIOS()) {
-            t.addCompileOptions({ opts: ['--language objective-c++'], language: 'cxx', scope: 'interface' });
-            t.addCompileOptions({ opts: ['--language objective-c'], language: 'c', scope: 'interface' });
+            t.addCompileOptions({ opts: ['--language objective-c++'], language: 'cxx' });
+            t.addCompileOptions({ opts: ['--language objective-c'], language: 'c' });
             t.addFrameworks(['Foundation', 'AudioToolbox']);
             if (b.isMacOS()) {
                 t.addFrameworks(['Cocoa', 'Quartzcore']);
@@ -42,7 +42,7 @@ export function build(b: fibs.Builder) {
         } else if (b.isLinux()) {
             t.addLibraries(['X11', 'Xi', 'Xcursor', 'm', 'dl', 'asound']);
             if (b.importOption('useEGL')) {
-                t.addCompileDefinitions({ defs: { 'SOKOL_FORCE_EGL': '1' }, scope: 'interface' });
+                t.addCompileDefinitions({ 'SOKOL_FORCE_EGL': '1' });
                 t.addLibraries(['EGL']);
             }
             switch (backend) {
@@ -55,13 +55,13 @@ export function build(b: fibs.Builder) {
             t.addLibraries(['GLESv3', 'EGL', 'log', 'android', 'aaudio']);
         } else if (b.isEmscripten()) {
             // FIXME: make configurable
-            t.addLinkOptions({ opts: ['-sNO_FILESYSTEM=1', `-sMALLOC='emmalloc'`], scope: 'interface' });
-            t.addLinkOptions({ opts: ['--closure 1'], scope: 'interface', buildMode: 'release'});
+            t.addLinkOptions(['-sNO_FILESYSTEM=1', `-sMALLOC='emmalloc'`]);
+            t.addLinkOptions({ opts: ['--closure 1'], buildMode: 'release'});
             if (backend === 'gles3') {
-                t.addLinkOptions({ opts: ['-sUSE_WEBGL2=1'], scope: 'interface' });
+                t.addLinkOptions(['-sUSE_WEBGL2=1']);
             } else if (backend === 'wgpu') {
-                t.addCompileOptions({ opts: ['--use-port=emdawnwebgpu'], scope: 'interface'});
-                t.addLinkOptions({ opts: ['--use-port=emdawnwebgpu'], scope: 'interface'});
+                t.addCompileOptions(['--use-port=emdawnwebgpu']);
+                t.addLinkOptions(['--use-port=emdawnwebgpu']);
             }
         }
     });
