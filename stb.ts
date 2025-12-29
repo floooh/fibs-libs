@@ -1,14 +1,14 @@
 // deno-lint-ignore no-unversioned-import
-import * as fibs from 'jsr:@floooh/fibs';
+import { Configurer, Builder } from 'jsr:@floooh/fibs';
 
-export function configure(c: fibs.Configurer) {
+export function configure(c: Configurer) {
   c.addImport({
     name: 'stb',
     url: 'https://github.com/nothings/stb',
   });
 }
 
-export function build(b: fibs.Builder) {
+export function build(b: Builder) {
   b.addTarget('stb', 'interface', (t) => {
     t.setDir(`${b.importDir('stb')}`);
     t.addIncludeDirectories(['.']);

@@ -9,7 +9,7 @@
 //  If not set, backend is selected automatically by target platform
 //
 // deno-lint-ignore no-unversioned-import
-import * as fibs from "jsr:@floooh/fibs";
+import { Configurer, Builder, log } from "jsr:@floooh/fibs";
 
 type SokolBackend =
     | "glcore"
@@ -25,17 +25,17 @@ type ImportOptions = {
     useEGL?: boolean;
 };
 
-export function configure(c: fibs.Configurer) {
+export function configure(c: Configurer) {
     c.addImport({
         name: "sokol",
         url: "https://github.com/floooh/sokol",
     });
 }
 
-export function build(b: fibs.Builder) {
+export function build(b: Builder) {
     const importOptions = (b.importOption('sokol') ?? {}) as ImportOptions;
     const backend = selectBackend(b, importOptions);
-    b.addTarget("sokol", "interface", (t: fibs.TargetBuilder) => {
+    b.addTarget("sokol", "interface", (t) => {
         t.setDir(`${b.importDir("sokol")}`);
         t.addIncludeDirectories([".", "./util"]);
         t.addCompileDefinitions({ [`SOKOL_${backend.toUpperCase()}`]: "1" });
@@ -109,7 +109,7 @@ function isValidSokolBackend(val: unknown): val is SokolBackend {
         "vulkan",
     ];
     if (!(typeof val === "string" && validBackends.includes(val))) {
-        fibs.log.warn(
+        log.warn(
             `import option sokolBackend must be one of: ${
                 validBackends.join(" ")
             }`,
@@ -119,7 +119,7 @@ function isValidSokolBackend(val: unknown): val is SokolBackend {
     return true;
 }
 
-function selectBackend(b: fibs.Builder, importOptions: ImportOptions): SokolBackend {
+function selectBackend(b: Builder, importOptions: ImportOptions): SokolBackend {
     if (importOptions.backend !== undefined) {
         if (isValidSokolBackend(importOptions.backend)) {
             return importOptions.backend;
