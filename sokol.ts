@@ -1,24 +1,5 @@
-//------------------------------------------------------------------------------
-// Import options:
-//
-// sokol: {
-//     backend: 'glcore' | 'gles3' | 'd3d11' | 'metal' | 'wgpu' | 'vulkan',
-//     useEGL: boolean = false
-// }
-//
-//  If not set, backend is selected automatically by target platform
-//
 // deno-lint-ignore no-unversioned-import
-import { Configurer, Builder, log, util, Schema } from "jsr:@floooh/fibs";
-
-type SokolBackend =
-    | "glcore"
-    | "gles3"
-    | "d3d11"
-    | "metal"
-    | "wgpu"
-    | "vulkan"
-    | "dummy_backend";
+import { Configurer, Builder, log, Schema } from "jsr:@floooh/fibs";
 
 type ImportOptions = {
     backend?: string;
@@ -29,7 +10,7 @@ const schema: Schema = {
     backend: {
         type: 'enum',
         optional: true,
-        items: ['glcore', 'gles3', 'd3d11', 'metal', 'wgpu', 'vulkan', 'dummy_backend' ],
+        items: ['glcore', 'gles3', 'd3d11', 'metal', 'wgpu', 'vulkan', 'dummy_backend'],
         desc: 'sokol-gfx backend (default: auto-select by target platform)'
     },
     useEGL: { type: 'boolean', optional: true, desc: 'use EGL instead of GLX on Linux/X11' },
@@ -47,7 +28,7 @@ export function configure(c: Configurer) {
 }
 
 export function build(b: Builder) {
-    const importOptions = util.safeCast<ImportOptions>(b.importOption('sokol'), schema, 'sokol import options');
+    const importOptions = b.importOptions<ImportOptions>('sokol', schema);
     const backend = selectBackend(b, importOptions);
     b.addTarget("sokol", "interface", (t) => {
         t.setDir(`${b.importDir("sokol")}`);
@@ -113,31 +94,9 @@ export function build(b: Builder) {
     });
 }
 
-function isValidSokolBackend(val: unknown): val is SokolBackend {
-    const validBackends = [
-        "glcore",
-        "gles3",
-        "d3d11",
-        "metal",
-        "wgpu",
-        "vulkan",
-    ];
-    if (!(typeof val === "string" && validBackends.includes(val))) {
-        log.warn(
-            `import option sokolBackend must be one of: ${
-                validBackends.join(" ")
-            }`,
-        );
-        return false;
-    }
-    return true;
-}
-
-function selectBackend(b: Builder, importOptions: ImportOptions): SokolBackend {
+function selectBackend(b: Builder, importOptions: ImportOptions): string {
     if (importOptions.backend !== undefined) {
-        if (isValidSokolBackend(importOptions.backend)) {
-            return importOptions.backend;
-        }
+        return importOptions.backend;
     }
     // fallthrough: auto-select
     switch (b.platform()) {
