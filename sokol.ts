@@ -9,7 +9,7 @@
 //  If not set, backend is selected automatically by target platform
 //
 // deno-lint-ignore no-unversioned-import
-import { Configurer, Builder, log } from "jsr:@floooh/fibs";
+import { Configurer, Builder, log, util, Schema } from "jsr:@floooh/fibs";
 
 type SokolBackend =
     | "glcore"
@@ -21,9 +21,23 @@ type SokolBackend =
     | "dummy_backend";
 
 type ImportOptions = {
-    backend?: SokolBackend;
+    backend?: string;
     useEGL?: boolean;
 };
+
+const schema: Schema = {
+    backend: {
+        type: 'enum',
+        optional: true,
+        items: ['glcore', 'gles3', 'd3d11', 'metal', 'wgpu', 'vulkan', 'dummy_backend' ],
+        desc: 'sokol-gfx backend (default: auto-select by target platform)'
+    },
+    useEGL: { type: 'boolean', optional: true, desc: 'use EGL instead of GLX on Linux/X11' },
+};
+
+export function help(importName: string) {
+    log.helpImport(importName, 'sokol headers', [{ name: 'sokol', schema }]);
+}
 
 export function configure(c: Configurer) {
     c.addImport({
@@ -33,7 +47,7 @@ export function configure(c: Configurer) {
 }
 
 export function build(b: Builder) {
-    const importOptions = (b.importOption('sokol') ?? {}) as ImportOptions;
+    const importOptions = util.safeCast<ImportOptions>(b.importOption('sokol'), schema, 'sokol import options');
     const backend = selectBackend(b, importOptions);
     b.addTarget("sokol", "interface", (t) => {
         t.setDir(`${b.importDir("sokol")}`);
