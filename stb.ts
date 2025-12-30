@@ -10,7 +10,7 @@ export function configure(c: Configurer) {
 
 export function build(b: Builder) {
   b.addTarget('stb', 'interface', (t) => {
-    t.setDir(`${b.importDir('stb')}`);
+    t.setDir(b.importDir('stb'));
     t.addIncludeDirectories(['.']);
     if (b.compiler() === 'msvc') {
       // conversion from 'x' to 'y'

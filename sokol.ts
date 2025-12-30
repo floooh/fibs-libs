@@ -31,7 +31,7 @@ export function build(b: Builder) {
     const importOptions = b.importOptions<ImportOptions>('sokol', schema);
     const backend = selectBackend(b, importOptions);
     b.addTarget("sokol", "interface", (t) => {
-        t.setDir(`${b.importDir("sokol")}`);
+        t.setDir(b.importDir("sokol"));
         t.addIncludeDirectories([".", "./util"]);
         t.addCompileDefinitions({ [`SOKOL_${backend.toUpperCase()}`]: "1" });
         if (b.isMacOS() || b.isIOS()) {
