@@ -36,11 +36,11 @@ export function build(b: Builder) {
         t.addCompileDefinitions({ [`SOKOL_${backend.toUpperCase()}`]: "1" });
         if (b.isMacOS() || b.isIOS()) {
             t.addCompileOptions({
-                opts: ["--language objective-c++"],
+                opts: ["--language=objective-c++"],
                 language: "cxx",
             });
             t.addCompileOptions({
-                opts: ["--language objective-c"],
+                opts: ["--language=objective-c"],
                 language: "c",
             });
             t.addFrameworks(["Foundation", "AudioToolbox"]);
