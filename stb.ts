@@ -18,5 +18,8 @@ export function build(b: Builder) {
     } else {
       t.addCompileOptions(['-Wno-sign-conversion', '-Wno-unused-function']);
     }
+    if (b.isLinux()) {
+      t.addLibraries(['m']);
+    }
   });
 }
