@@ -1,5 +1,4 @@
-// deno-lint-ignore no-unversioned-import
-import { Configurer, Builder, log, Schema } from "jsr:@floooh/fibs";
+import { Configurer, Builder, log, Schema } from "jsr:@floooh/fibs@^1";
 
 type ImportOptions = {
     backend?: string;
