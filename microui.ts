@@ -1,3 +1,4 @@
+// FIXME: port to final fibs version
 import { fibs } from './deps.ts';
 
 export const project: fibs.ProjectDesc = {
