@@ -42,15 +42,15 @@ export function build(b: Builder) {
                 opts: ["--language=objective-c"],
                 language: "c",
             });
-            t.addFrameworks(["Foundation", "AudioToolbox"]);
+            t.addFrameworks(["Foundation", "AudioToolbox", "QuartzCore"]);
             if (b.isMacOS()) {
-                t.addFrameworks(["Cocoa", "Quartzcore"]);
+                t.addFrameworks(["Cocoa"]);
             } else if (b.isIOS()) {
                 t.addFrameworks(["UIKit", "AVFoundation"]);
             }
             switch (backend) {
                 case "metal":
-                    t.addFrameworks(["MetalKit", "Metal"]);
+                    t.addFrameworks(["Metal"]);
                     break;
                 case "glcore":
                     t.addFrameworks(["OpenGL"]);
