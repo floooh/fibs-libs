@@ -33,7 +33,14 @@ export function build(b: Builder) {
         t.setDir(b.importDir("sokol"));
         t.addIncludeDirectories([".", "./util"]);
         t.addCompileDefinitions({ [`SOKOL_${backend.toUpperCase()}`]: "1" });
-        if (b.isMacOS() || b.isIOS()) {
+        if (b.isWindows()) {
+            if (backend === "vulkan") {
+                t.addIncludeDirectories(['$ENV{VULKAN_SDK}/Include']);
+                t.addLinkDirectories(['$ENV{VULKAN_SDK}/Lib']);
+                t.addLibraries(["vulkan"]);
+            }
+        }
+        else if (b.isMacOS() || b.isIOS()) {
             t.addCompileOptions({
                 opts: ["--language=objective-c++"],
                 language: "cxx",
