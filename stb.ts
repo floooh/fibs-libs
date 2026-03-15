@@ -13,9 +13,15 @@ export function build(b: Builder) {
     t.addIncludeDirectories(['.']);
     if (b.compiler() === 'msvc') {
       // conversion from 'x' to 'y'
-      t.addCompileOptions([ '/wd4244' ]);
+      t.addCompileOptions({
+        scope: 'interface',
+        opts: [ '/wd4244' ],
+      });
     } else {
-      t.addCompileOptions(['-Wno-sign-conversion', '-Wno-unused-function']);
+      t.addCompileOptions({
+        scope: 'interface',
+        opts: ['-Wno-sign-conversion', '-Wno-unused-function']
+      });
     }
     if (b.isLinux()) {
       t.addLibraries(['m']);
