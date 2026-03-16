@@ -11,7 +11,7 @@ export function build(b: Builder) {
     b.addTarget('microui', 'lib', (t) => {
         t.setDir(`${b.importDir('microui')}/src`);
         t.addSources(['microui.c', 'microui.h']);
-        t.addIncludeDirectories(['.']);
+        t.addIncludeDirectories(['.', '../demo']); // 'demo' for 'atlas.inl'
         if (b.isMsvc()) {
             t.addCompileOptions({
                 scope: 'private',
