@@ -13,7 +13,7 @@ export function build(b: Builder) {
         return;
     }
     b.addTarget('glfw3', 'lib', (t) => {
-        t.setDir('src');
+        t.setDir(`${b.importDir('glfw3')}/src`);
         t.addIncludeDirectories(['../include']);
         t.addSources([
             'context.c',
