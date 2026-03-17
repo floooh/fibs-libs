@@ -66,13 +66,12 @@ export function build(b: Builder) {
             t.addCompileOptions({
                 scope: 'private',
                 opts: [
-                    '/wd4819',
-                    '/wd4146',
-                    '/wd4244',
-                    '/wd4996',
-                    '/wd4018',
-                    '/wd4267',
-                    '/wd4018',
+                    '/wd4100', // unreferenced parameter
+                    '/wd4701', // potentially uninitialized local variable
+                    '/wd4702', // unreachable code
+                    '/wd4244', // conversion from 'X' to 'Y', possible loss of data
+                    '/wd4267', // conversion from 'X' to 'Y', possible loss of data
+                    '/wd4018', // signed/unsigned mismatch
                 ],
             });
         } else {
