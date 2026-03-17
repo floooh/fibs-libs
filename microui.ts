@@ -15,7 +15,11 @@ export function build(b: Builder) {
         if (b.isMsvc()) {
             t.addCompileOptions({
                 scope: 'private',
-                opts: ['/wd4267', '/wd4244', '/wd4996']
+                opts: [
+                    '/wd4267', // conversion from 'X' to 'Y', possible loss of data
+                    '/wd4244', // conversion from 'X' to 'Y', possible loss of data
+                    '/wd4456', // declaration of 'X' hides previous local declaration
+                ],
             });
         } else {
             t.addCompileOptions({
