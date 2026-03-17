@@ -17,7 +17,14 @@ export function build(b: Builder) {
         if (b.isMsvc()) {
             t.addCompileOptions({
                 scope: 'interface',
-                opts: ['/wd4996'],
+                opts: [
+                    '/wd5287', // operands are different enum types
+                    '/wd4127', // conditional expression is constant
+                    '/wd4244', // conversion from 'X' to 'Y', possible loss of data
+                    '/wd4456', // declaration of 'X' hides previous local declaration
+                    '/wd4701', // potentially uninitialized local variable 'X' used
+                    '/wd4996', // deprecation warnings
+                ],
             });
         } else {
             t.addCompileOptions({
