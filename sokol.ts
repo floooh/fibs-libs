@@ -35,8 +35,12 @@ export function build(b: Builder) {
         t.addCompileDefinitions({ [`SOKOL_${backend.toUpperCase()}`]: "1" });
         if (b.isWindows()) {
             if (backend === "vulkan") {
-                t.addIncludeDirectories(['$ENV{VULKAN_SDK}/Include']);
-                t.addLinkDirectories(['$ENV{VULKAN_SDK}/Lib']);
+                const vulkanSdkPath = Deno.env.get('VULKAN_SDK');
+                if (vulkanSdkPath === undefined) {
+                    log.warn('VULKAN_SDK environment variable is required to build sokol on Windows (provided by Vulkan SDK)');
+                }
+                t.addIncludeDirectories([`${vulkanSdkPath}/Include`]);
+                t.addLinkDirectories([`${vulkanSdkPath}/Lib`]);
                 t.addLibraries(["vulkan"]);
             }
         }
