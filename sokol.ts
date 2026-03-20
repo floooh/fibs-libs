@@ -79,9 +79,11 @@ export function build(b: Builder) {
           break;
         case "glcore":
           t.addFrameworks(["OpenGL"]);
+          t.addCompileOptions(['-Wno-deprecated-declarations']);
           break;
         case "gles3":
-          t.addFrameworks(["OpenGLES"]);
+          t.addFrameworks(["OpenGLES", "GLKit"]);
+          t.addCompileOptions(['-Wno-deprecated-declarations']);
           break;
         default:
           break;
