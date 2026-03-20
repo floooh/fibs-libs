@@ -1,126 +1,140 @@
-import { Configurer, Builder, log, Schema } from "jsr:@floooh/fibs@^1";
+import { Builder, Configurer, log, Schema } from "jsr:@floooh/fibs@^1";
 
 type ImportOptions = {
-    backend?: string;
-    useEGL?: boolean;
+  backend?: string;
+  useEGL?: boolean;
 };
 
 const schema: Schema = {
-    backend: {
-        type: 'enum',
-        optional: true,
-        items: ['glcore', 'gles3', 'd3d11', 'metal', 'wgpu', 'vulkan', 'dummy_backend'],
-        desc: 'sokol-gfx backend (default: auto-select by target platform)'
-    },
-    useEGL: { type: 'boolean', optional: true, desc: 'use EGL instead of GLX on Linux/X11' },
+  backend: {
+    type: "enum",
+    optional: true,
+    items: [
+      "glcore",
+      "gles3",
+      "d3d11",
+      "metal",
+      "wgpu",
+      "vulkan",
+      "dummy_backend",
+    ],
+    desc: "sokol-gfx backend (default: auto-select by target platform)",
+  },
+  useEGL: {
+    type: "boolean",
+    optional: true,
+    desc: "use EGL instead of GLX on Linux/X11",
+  },
 };
 
 export function help(importName: string) {
-    log.helpImport(importName, 'sokol headers', [{ name: 'sokol', schema }]);
+  log.helpImport(importName, "sokol headers", [{ name: "sokol", schema }]);
 }
 
 export function configure(c: Configurer) {
-    c.addImport({
-        name: "sokol",
-        url: "https://github.com/floooh/sokol",
-    });
+  c.addImport({
+    name: "sokol",
+    url: "https://github.com/floooh/sokol",
+  });
 }
 
 export function build(b: Builder) {
-    const importOptions = b.importOptions<ImportOptions>('sokol', schema);
-    const backend = selectBackend(b, importOptions);
-    b.addTarget("sokol", "interface", (t) => {
-        t.setDir(b.importDir("sokol"));
-        t.addIncludeDirectories([".", "./util"]);
-        t.addCompileDefinitions({ [`SOKOL_${backend.toUpperCase()}`]: "1" });
-        if (b.isWindows()) {
-            if (backend === "vulkan") {
-                const vulkanSdkPath = Deno.env.get('VULKAN_SDK');
-                if (vulkanSdkPath === undefined) {
-                    log.warn('VULKAN_SDK environment variable is required to build sokol on Windows (provided by Vulkan SDK)');
-                }
-                t.addIncludeDirectories([`${vulkanSdkPath}/Include`]);
-                t.addLinkDirectories([`${vulkanSdkPath}/Lib`]);
-                t.addLibraries(["vulkan"]);
-            }
+  const importOptions = b.importOptions<ImportOptions>("sokol", schema);
+  const backend = selectBackend(b, importOptions);
+  b.addTarget("sokol", "interface", (t) => {
+    t.setDir(b.importDir("sokol"));
+    t.addIncludeDirectories([".", "./util"]);
+    t.addCompileDefinitions({ [`SOKOL_${backend.toUpperCase()}`]: "1" });
+    if (b.isWindows()) {
+      if (backend === "vulkan") {
+        const VULKAN_SDK = Deno.env.get("VULKAN_SDK");
+        if (VULKAN_SDK === undefined) {
+          log.warn(
+            "VULKAN_SDK environment variable is required to build sokol on Windows (provided by Vulkan SDK)",
+          );
         }
-        else if (b.isMacOS() || b.isIOS()) {
-            t.addCompileOptions({
-                opts: ["--language=objective-c++"],
-                language: "cxx",
-            });
-            t.addCompileOptions({
-                opts: ["--language=objective-c"],
-                language: "c",
-            });
-            t.addFrameworks(["Foundation", "AudioToolbox", "QuartzCore"]);
-            if (b.isMacOS()) {
-                t.addFrameworks(["Cocoa"]);
-            } else if (b.isIOS()) {
-                t.addFrameworks(["UIKit", "AVFoundation"]);
-            }
-            switch (backend) {
-                case "metal":
-                    t.addFrameworks(["Metal"]);
-                    break;
-                case "glcore":
-                    t.addFrameworks(["OpenGL"]);
-                    break;
-                case "gles3":
-                    t.addFrameworks(["OpenGLES"]);
-                    break;
-                default:
-                    break;
-            }
-        } else if (b.isLinux()) {
-            t.addLibraries(["X11", "Xi", "Xcursor", "m", "dl", "asound"]);
-            if (importOptions.useEGL) {
-                t.addCompileDefinitions({ "SOKOL_FORCE_EGL": "1" });
-                t.addLibraries(["EGL"]);
-            }
-            switch (backend) {
-                case "glcore":
-                    t.addLibraries(["GL"]);
-                    break;
-                case "gles3":
-                    t.addLibraries(["GLESv2"]);
-                    break; // not a typo
-                case "vulkan":
-                    t.addLibraries(["vulkan"]);
-                    break;
-                default:
-                    break;
-            }
-        } else if (b.isAndroid()) {
-            t.addLibraries(["GLESv3", "EGL", "log", "android", "aaudio"]);
-        } else if (b.isEmscripten()) {
-            if (backend === "gles3") {
-                t.addLinkOptions(["-sUSE_WEBGL2=1"]);
-            } else if (backend === "wgpu") {
-                t.addCompileOptions(["--use-port=emdawnwebgpu"]);
-                t.addLinkOptions(["--use-port=emdawnwebgpu"]);
-            }
-        }
-    });
+        const vulkanSdkPath = VULKAN_SDK?.replaceAll("\\", "/");
+        t.addIncludeDirectories([`${vulkanSdkPath}/Include`]);
+        t.addLinkDirectories([`${vulkanSdkPath}/Lib`]);
+        t.addLibraries(["vulkan-1"]);
+      }
+    } else if (b.isMacOS() || b.isIOS()) {
+      t.addCompileOptions({
+        opts: ["--language=objective-c++"],
+        language: "cxx",
+      });
+      t.addCompileOptions({
+        opts: ["--language=objective-c"],
+        language: "c",
+      });
+      t.addFrameworks(["Foundation", "AudioToolbox", "QuartzCore"]);
+      if (b.isMacOS()) {
+        t.addFrameworks(["Cocoa"]);
+      } else if (b.isIOS()) {
+        t.addFrameworks(["UIKit", "AVFoundation"]);
+      }
+      switch (backend) {
+        case "metal":
+          t.addFrameworks(["Metal"]);
+          break;
+        case "glcore":
+          t.addFrameworks(["OpenGL"]);
+          break;
+        case "gles3":
+          t.addFrameworks(["OpenGLES"]);
+          break;
+        default:
+          break;
+      }
+    } else if (b.isLinux()) {
+      t.addLibraries(["X11", "Xi", "Xcursor", "m", "dl", "asound"]);
+      if (importOptions.useEGL) {
+        t.addCompileDefinitions({ "SOKOL_FORCE_EGL": "1" });
+        t.addLibraries(["EGL"]);
+      }
+      switch (backend) {
+        case "glcore":
+          t.addLibraries(["GL"]);
+          break;
+        case "gles3":
+          t.addLibraries(["GLESv2"]);
+          break; // not a typo
+        case "vulkan":
+          t.addLibraries(["vulkan"]);
+          break;
+        default:
+          break;
+      }
+    } else if (b.isAndroid()) {
+      t.addLibraries(["GLESv3", "EGL", "log", "android", "aaudio"]);
+    } else if (b.isEmscripten()) {
+      if (backend === "gles3") {
+        t.addLinkOptions(["-sUSE_WEBGL2=1"]);
+      } else if (backend === "wgpu") {
+        t.addCompileOptions(["--use-port=emdawnwebgpu"]);
+        t.addLinkOptions(["--use-port=emdawnwebgpu"]);
+      }
+    }
+  });
 }
 
 function selectBackend(b: Builder, importOptions: ImportOptions): string {
-    if (importOptions.backend !== undefined) {
-        return importOptions.backend;
-    }
-    // fallthrough: auto-select
-    switch (b.platform()) {
-        case "windows":
-            return "d3d11";
-        case "linux":
-            return "glcore";
-        case "macos":
-        case "ios":
-            return "metal";
-        case "emscripten":
-        case "android":
-            return "gles3";
-        default:
-            return "glcore";
-    }
+  if (importOptions.backend !== undefined) {
+    return importOptions.backend;
+  }
+  // fallthrough: auto-select
+  switch (b.platform()) {
+    case "windows":
+      return "d3d11";
+    case "linux":
+      return "glcore";
+    case "macos":
+    case "ios":
+      return "metal";
+    case "emscripten":
+    case "android":
+      return "gles3";
+    default:
+      return "glcore";
+  }
 }
