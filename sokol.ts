@@ -67,9 +67,9 @@ export function build(b: Builder) {
         opts: ["--language=objective-c"],
         language: "c",
       });
-      t.addFrameworks(["Foundation", "AudioToolbox", "QuartzCore"]);
+      t.addFrameworks(["AudioToolbox", "QuartzCore"]);
       if (b.isMacOS()) {
-        t.addFrameworks(["Cocoa"]);
+        t.addFrameworks(["AppKit"]);
       } else if (b.isIOS()) {
         t.addFrameworks(["UIKit", "AVFoundation"]);
       }
