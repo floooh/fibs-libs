@@ -71,7 +71,7 @@ export function build(b: Builder) {
       if (b.isMacOS()) {
         t.addFrameworks(["AppKit"]);
       } else if (b.isIOS()) {
-        t.addFrameworks(["UIKit", "AVFoundation"]);
+        t.addFrameworks(["Foundation", "UIKit", "AVFoundation"]);
       }
       switch (backend) {
         case "metal":
