@@ -17,11 +17,11 @@ export function build(b: Builder) {
             C_STANDARD_REQUIRED: 'YES',
             C_EXTENSIONS: 'YES',
         });
-        t.addCompileDefinitions({
-            defs: { BOX3D_VALIDATE: '1' },
-            buildMode: 'debug',
-        });
         // FIXME: might want to make that configurable
+        //t.addCompileDefinitions({
+        //    defs: { BOX3D_VALIDATE: '1' },
+        //    buildMode: 'debug',
+        //});
         t.addCompileDefinitions({
             BOX3D_DISABLE_SIMD: '1',
         })
