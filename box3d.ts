@@ -17,14 +17,18 @@ export function build(b: Builder) {
             C_STANDARD_REQUIRED: 'YES',
             C_EXTENSIONS: 'YES',
         });
+        if (b.platform() === 'emscripten') {
+            // enable WASM SIMD
+            t.addCompileOptions(['-msimd128', '-msse2']);
+        }
         // FIXME: might want to make that configurable
         //t.addCompileDefinitions({
         //    defs: { BOX3D_VALIDATE: '1' },
         //    buildMode: 'debug',
         //});
-        t.addCompileDefinitions({
-            BOX3D_DISABLE_SIMD: '1',
-        })
+        //t.addCompileDefinitions({
+        //    BOX3D_DISABLE_SIMD: '1',
+        //})
     });
 }
 
