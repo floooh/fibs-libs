@@ -23,7 +23,7 @@ export function build(b: Builder) {
                 opts: ['-Wno-unused-value', '-Wno-maybe-uninitialized']
             });
         }
-        if (b.compiler() !== 'msvc') {
+        if ((b.compiler() !== 'msvc') && (b.platform() !== 'emscripten')) {
             // Deterministic math
             // https://box2d.org/posts/2024/08/determinism/
             t.addCompileOptions({
@@ -31,13 +31,18 @@ export function build(b: Builder) {
                 opts: ['-ffp-contract=off'],
             })
         }
+        // NOTE: Emscripten/Clang currently crashes in release mode when SIMD is enabled:
+        //
+        // Running pass 'WebAssembly Instruction Selection' on function '@b3CreateShape'
+        // llvm::SelectionDAG::isKnownNeverNaN
+        // WebAssemblyDAGToDAGISel::CheckNodePredicate
+        //
         if (b.platform() === 'emscripten') {
-            // enable WASM SIMD
-            t.addCompileOptions(['-msimd128', '-msse2']);
+            t.addCompileDefinitions({
+                BOX3D_DISABLE_SIMD: '1',
+            })
+            // t.addCompileOptions(['-msimd128', '-msse2']);
         }
-        //t.addCompileDefinitions({
-        //    BOX3D_DISABLE_SIMD: '1',
-        //})
     });
 }
 
