@@ -17,6 +17,12 @@ export function build(b: Builder) {
             C_STANDARD_REQUIRED: 'YES',
             C_EXTENSIONS: 'YES',
         });
+        if (b.compiler() === 'gcc') {
+            t.addCompileOptions({
+                scope: 'private',
+                opts: ['-Wno-unused-value', '-Wno-maybe-uninitialized']
+            });
+        }
         if (b.compiler() !== 'msvc') {
             // Deterministic math
             // https://box2d.org/posts/2024/08/determinism/
