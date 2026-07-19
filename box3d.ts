@@ -32,6 +32,7 @@ export function build(b: Builder) {
             })
         }
         // NOTE: Emscripten/Clang currently crashes in release mode when SIMD is enabled:
+        // This appears to be a regression between emsdk 6.0.2 and 6.0.3
         //
         // Running pass 'WebAssembly Instruction Selection' on function '@b3CreateShape'
         // llvm::SelectionDAG::isKnownNeverNaN
@@ -41,7 +42,7 @@ export function build(b: Builder) {
             t.addCompileDefinitions({
                 BOX3D_DISABLE_SIMD: '1',
             })
-            // t.addCompileOptions(['-msimd128', '-msse2']);
+            //t.addCompileOptions(['-msimd128', '-msse2']);
         }
     });
 }
