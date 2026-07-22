@@ -34,6 +34,8 @@ export function build(b: Builder) {
         // NOTE: Emscripten/Clang currently crashes in release mode when SIMD is enabled:
         // This appears to be a regression between emsdk 6.0.2 and 6.0.3
         //
+        // NOTE 2: this is fixed in emsdk top-of-tree as of 22-Jul-2026
+        //
         // Running pass 'WebAssembly Instruction Selection' on function '@b3CreateShape'
         // llvm::SelectionDAG::isKnownNeverNaN
         // WebAssemblyDAGToDAGISel::CheckNodePredicate
