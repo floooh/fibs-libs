@@ -114,7 +114,7 @@ export function build(b: Builder) {
         t.addLinkOptions(["-sUSE_WEBGL2=1"]);
       } else if (backend === "wgpu") {
         t.addCompileOptions(["--use-port=emdawnwebgpu"]);
-        t.addLinkOptions(["--use-port=emdawnwebgpu"]);
+        t.addLinkOptions(["--use-port=emdawnwebgpu", "-sDEFAULT_TO_CXX"]);
       }
     }
   });
