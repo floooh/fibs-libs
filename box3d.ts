@@ -23,6 +23,11 @@ export function build(b: Builder) {
                 opts: ['-Wno-unused-value', '-Wno-maybe-uninitialized']
             });
         }
+        if (b.compiler() === 'msvc') {
+            // upstream compiles wide8.c with /arch:AVX2 on MSVC, fibs has no
+            // per-file compile options, so disable the AVX2 code path instead
+            t.addCompileDefinitions({ BOX3D_DISABLE_AVX2: '1' });
+        }
         if ((b.compiler() !== 'msvc') && (b.platform() !== 'emscripten')) {
             // Deterministic math
             // https://box2d.org/posts/2024/08/determinism/
@@ -61,9 +66,11 @@ const sources = [
     'constraint_graph.h',
     'contact.c',
     'contact.h',
+    'contact_solver_wide.inl',
     'contact_solver.c',
     'contact_solver.h',
     'container.h',
+    'convex_manifold_wide.inl',
     'convex_manifold.c',
     'core.c',
     'core.h',
@@ -71,8 +78,10 @@ const sources = [
     'distance.c',
     'distance_joint.c',
     'dynamic_tree.c',
+    'dynamic_tree.h',
     'height_field.c',
     'hull.c',
+    'hull.h',
     'id_pool.c',
     'id_pool.h',
     'island.c',
@@ -97,6 +106,7 @@ const sources = [
     'platform.h',
     'prismatic_joint.c',
     'qsort.h',
+    'rapidhash.h',
     'recording.c',
     'recording.h',
     'recording_ops.inl',
@@ -113,6 +123,11 @@ const sources = [
     'shape.h',
     'simd.c',
     'simd.h',
+    'simd_avx2.h',
+    'simd_neon.h',
+    'simd_scalar.h',
+    'simd_sse2.h',
+    'simd_wide.h',
     'solver.c',
     'solver.h',
     'solver_set.c',
@@ -127,4 +142,6 @@ const sources = [
     'verstable.h',
     'weld_joint.c',
     'wheel_joint.c',
+    'wide4.c',
+    'wide8.c',
 ]
