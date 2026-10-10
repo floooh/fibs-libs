@@ -1,9 +1,12 @@
-import { Configurer, Builder } from 'jsr:@floooh/fibs@^1';
+import { Configurer, Builder, log } from 'jsr:@floooh/fibs@^1';
+
+const BOX3D_REF = '5d83df83ab47172c2c745b44315e7538ead02397';
 
 export function configure(c: Configurer) {
     c.addImport({
         name: 'box3d',
-        url: 'https://github.com/erincatto/box3d'
+        url: 'https://github.com/erincatto/box3d',
+        ref: BOX3D_REF,
     });
 }
 
@@ -110,10 +113,8 @@ const sources = [
     'recording.c',
     'recording.h',
     'recording_ops.inl',
-    'recording_replay.c',
-    'recording_replay.h',
-    'world_snapshot.c',
-    'world_snapshot.h',
+    'replay.c',
+    'replay.h',
     'revolute_joint.c',
     'scheduler.c',
     'scheduler.h',
@@ -144,4 +145,6 @@ const sources = [
     'wheel_joint.c',
     'wide4.c',
     'wide8.c',
+    'world_snapshot.c',
+    'world_snapshot.h',
 ]
