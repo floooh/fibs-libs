@@ -89,7 +89,7 @@ export function build(b: Builder) {
           break;
       }
     } else if (b.isLinux()) {
-      t.addLibraries(["X11", "Xi", "Xcursor", "m", "dl", "asound"]);
+      t.addLibraries(["X11", "Xi", "Xcursor", "m", "dl", "pulse-simple", "pulse"]);
       if (importOptions.useEGL) {
         t.addCompileDefinitions({ "SOKOL_FORCE_EGL": "1" });
         t.addLibraries(["EGL"]);
